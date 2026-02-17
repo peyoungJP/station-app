@@ -13,7 +13,17 @@
       "Bash(supabase init:*)",
       "Bash(supabase link:*)",
       "Bash(supabase login:*)",
-      "Bash(gh issue close:*)"
+      "Bash(gh issue close:*)",
+      "Bash(flutter devices:*)",
+      "Bash(flutter run:*)",
+      "WebFetch(domain:ekidata.jp)",
+      "WebSearch",
+      "WebFetch(domain:qiita.com)",
+      "WebFetch(domain:linkdata.org)",
+      "WebFetch(domain:uedayou.net)",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "Bash(git -C /Users/hiroshisaito/Developer/my_first_app remote -v)"
     ]
   }
 }

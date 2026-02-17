@@ -16,7 +16,7 @@ class StationService {
       params: {
         'lat': latitude,
         'lng': longitude,
-        'radius_meters': radiusMeters,
+        'radius_meters': radiusMeters.toInt(),
       },
     );
 
