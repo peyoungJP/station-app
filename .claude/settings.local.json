@@ -12,7 +12,8 @@
       "Bash(gh issue list:*)",
       "Bash(supabase init:*)",
       "Bash(supabase link:*)",
-      "Bash(supabase login:*)"
+      "Bash(supabase login:*)",
+      "Bash(gh issue close:*)"
     ]
   }
 }
