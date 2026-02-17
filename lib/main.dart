@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'design_system/theme.dart';
 import 'screens/home_screen.dart';
+import 'services/supabase_service.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SupabaseService.initialize();
   runApp(const ProviderScope(child: MyApp()));
 }
 

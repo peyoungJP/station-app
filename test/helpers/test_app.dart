@@ -7,7 +7,16 @@ Widget buildTestApp(Widget child, {List<Override>? overrides}) {
     overrides: overrides ?? [],
     child: MaterialApp(
       theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
+      home: child,
+    ),
+  );
+}
+
+Widget buildTestAppDark(Widget child, {List<Override>? overrides}) {
+  return ProviderScope(
+    overrides: overrides ?? [],
+    child: MaterialApp(
+      theme: AppTheme.dark,
       home: child,
     ),
   );

@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 
-import '../models/report.dart';
 import 'supabase_service.dart';
 
 class ReportService {
@@ -16,14 +15,13 @@ class ReportService {
       return;
     }
 
-    final report = Report(
-      id: '',
-      contentType: contentType,
-      contentId: contentId,
-      reason: reason,
-      details: details,
-    );
+    final data = {
+      'content_type': contentType,
+      'content_id': contentId,
+      'reason': reason,
+      if (details != null) 'details': details,
+    };
 
-    await SupabaseService.client.from('reports').insert(report.toJson());
+    await SupabaseService.client.from('reports').insert(data);
   }
 }
