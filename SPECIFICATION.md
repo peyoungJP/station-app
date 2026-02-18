@@ -4,7 +4,7 @@
 
 | 項目 | 内容 |
 |------|------|
-| アプリ名 | 駅掲示板 |
+| アプリ名 | ここ板（ここばん） |
 | フレームワーク | Flutter (Dart SDK ^3.11.0) |
 | 状態管理 | flutter_riverpod ^2.6.1 |
 | バックエンド | Supabase (supabase_flutter ^2.8.0) |
@@ -234,7 +234,7 @@ lib/
 
 | 項目 | 値 |
 |------|-----|
-| カラーシード | `#1565C0`（ブルー系） |
+| カラーシード | `#4299F0`（ブルー系） |
 | デザインシステム | Material 3 |
 | テーマモード | システム設定に追従（ライト/ダーク自動切替） |
 | デバッグバナー | 非表示 |
@@ -298,3 +298,45 @@ lib/
 | スレッドタイトル | 50文字 |
 | スレッド本文 | 1,000文字 |
 | 返信本文 | 1,000文字 |
+
+---
+
+## 12. 拡張予定仕様（事業戦略に基づく）
+
+> 以下は `docs/business-strategy-v2.md` の実証計画に基づき、今後追記が必要な技術仕様の一覧。
+> 各項目は実装着手時に詳細を本書に追記すること。
+
+### 12.1 Location抽象化（イベント対応）
+
+現在の `Station` モデルを `Location` に抽象化し、イベント会場を掲示板の対象にできるようにする。
+
+```
+Location
+ ├─ station（常設 … 既存の駅モデル）
+ ├─ event（期間限定 … フェス・花火等）
+ └─ area（将来拡張）
+```
+
+**追記が必要な項目:**
+- [ ] `locations` テーブル設計（type, radius, start_date, end_date, is_active）
+- [ ] 既存の `Station` モデルとの互換性・マイグレーション方針
+- [ ] Supabase RPC の変更（`get_nearby_stations` → Location対応）
+
+### 12.2 Web版
+
+QRコードからアクセスする軽量Webページ。ネイティブアプリとは別に構築する。
+
+**追記が必要な項目:**
+- [ ] 技術選定（Next.js / SvelteKit / 静的HTML+JS）
+- [ ] 画面構成（掲示板ページ、スレッドページ、利用規約、プライバシーポリシー）
+- [ ] URL設計（例: `/board/{location_id}`, `/board/{location_id}/thread/{thread_id}`）
+- [ ] UTMパラメータの設計
+- [ ] ホスティング先（Vercel / Cloudflare Pages 等）
+
+### 12.3 計測基盤
+
+**追記が必要な項目:**
+- [ ] Firebase Analytics の導入手順（Web版）
+- [ ] Supabase Realtime Presence による同時接続数の計測実装
+- [ ] UTMパラメータの取得・記録方法
+- [ ] KPI集計用SQLクエリ一覧

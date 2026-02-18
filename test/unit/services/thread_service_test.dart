@@ -49,6 +49,18 @@ void main() {
           expect(thread.stationId, 'mock-1');
         }
       });
+
+      test('スレッドがlastPostedAt降順でソートされている', () async {
+        final threads = await service.getThreads('mock-1');
+
+        for (int i = 0; i < threads.length - 1; i++) {
+          final aTime = threads[i].lastPostedAt ?? threads[i].createdAt;
+          final bTime =
+              threads[i + 1].lastPostedAt ?? threads[i + 1].createdAt;
+          expect(aTime.isAfter(bTime) || aTime.isAtSameMomentAs(bTime),
+              isTrue);
+        }
+      });
     });
 
     group('createThread', () {

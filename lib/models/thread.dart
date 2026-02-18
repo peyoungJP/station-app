@@ -5,6 +5,7 @@ class Thread {
   final String body;
   final DateTime createdAt;
   final int postCount;
+  final DateTime? lastPostedAt;
 
   const Thread({
     required this.id,
@@ -13,6 +14,7 @@ class Thread {
     required this.body,
     required this.createdAt,
     this.postCount = 0,
+    this.lastPostedAt,
   });
 
   factory Thread.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,9 @@ class Thread {
       body: json['body'] as String,
       createdAt: DateTime.parse(json['created_at'] as String),
       postCount: json['post_count'] as int? ?? 0,
+      lastPostedAt: json['last_posted_at'] != null
+          ? DateTime.parse(json['last_posted_at'] as String)
+          : null,
     );
   }
 

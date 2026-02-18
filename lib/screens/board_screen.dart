@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../design_system/tokens.dart';
 import '../models/station.dart';
 import '../providers/thread_provider.dart';
+import '../widgets/error_view.dart';
 import '../widgets/thread_card.dart';
 import 'create_thread_screen.dart';
 import 'thread_detail_screen.dart';
@@ -79,8 +80,17 @@ class BoardScreen extends ConsumerWidget {
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, _) => Center(
-            child: Text('エラー: $error'),
+          error: (error, _) => ListView(
+            children: [
+              SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+              Center(
+                child: ErrorView(
+                  error: error,
+                  onRetry: () =>
+                      ref.read(threadsProvider(station.id).notifier).refresh(),
+                ),
+              ),
+            ],
           ),
         ),
       ),

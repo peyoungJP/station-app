@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../utils/input_sanitizer.dart';
 import 'supabase_service.dart';
 
 class ReportService {
@@ -9,6 +10,9 @@ class ReportService {
     required String reason,
     String? details,
   }) async {
+    final sanitizedDetails =
+        details != null ? InputSanitizer.sanitize(details) : null;
+
     if (SupabaseService.useMock) {
       await Future.delayed(const Duration(milliseconds: 200));
       debugPrint('Report created (mock): $contentType/$contentId - $reason');
@@ -19,7 +23,8 @@ class ReportService {
       'content_type': contentType,
       'content_id': contentId,
       'reason': reason,
-      if (details != null) 'details': details,
+      if (sanitizedDetails != null && sanitizedDetails.isNotEmpty)
+        'details': sanitizedDetails,
     };
 
     await SupabaseService.client.from('reports').insert(data);

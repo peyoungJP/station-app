@@ -51,6 +51,7 @@ class TestFixtures {
     String body = 'テスト本文です',
     DateTime? createdAt,
     int postCount = 0,
+    DateTime? lastPostedAt,
   }) =>
       Thread(
         id: id,
@@ -59,6 +60,7 @@ class TestFixtures {
         body: body,
         createdAt: createdAt ?? DateTime(2026, 1, 1, 12, 0),
         postCount: postCount,
+        lastPostedAt: lastPostedAt,
       );
 
   static Map<String, dynamic> threadJson({
@@ -68,6 +70,7 @@ class TestFixtures {
     String body = 'テスト本文です',
     String createdAt = '2026-01-01T12:00:00.000',
     int postCount = 0,
+    String? lastPostedAt,
   }) =>
       {
         'id': id,
@@ -76,6 +79,7 @@ class TestFixtures {
         'body': body,
         'created_at': createdAt,
         'post_count': postCount,
+        if (lastPostedAt != null) 'last_posted_at': lastPostedAt,
       };
 
   static Post post({

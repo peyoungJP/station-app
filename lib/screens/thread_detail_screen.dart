@@ -6,6 +6,7 @@ import '../design_system/tokens.dart';
 import '../models/thread.dart';
 import '../providers/thread_provider.dart';
 import '../services/report_service.dart';
+import '../widgets/error_view.dart';
 import '../widgets/post_item.dart';
 
 class ThreadDetailScreen extends ConsumerStatefulWidget {
@@ -183,7 +184,14 @@ class _ThreadDetailScreenState extends ConsumerState<ThreadDetailScreen> {
               },
               loading: () =>
                   const Center(child: CircularProgressIndicator()),
-              error: (error, _) => Center(child: Text('エラー: $error')),
+              error: (error, _) => Center(
+                child: ErrorView(
+                  error: error,
+                  onRetry: () => ref
+                      .read(postsProvider(widget.thread.id).notifier)
+                      .refresh(),
+                ),
+              ),
             ),
           ),
 

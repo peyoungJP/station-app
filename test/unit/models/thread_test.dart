@@ -8,6 +8,7 @@ void main() {
     group('コンストラクタ', () {
       test('全フィールドが正しく設定される', () {
         final createdAt = DateTime(2026, 1, 15, 10, 30);
+        final lastPostedAt = DateTime(2026, 1, 15, 12, 0);
         final thread = Thread(
           id: 't1',
           stationId: 's1',
@@ -15,6 +16,7 @@ void main() {
           body: 'テスト本文',
           createdAt: createdAt,
           postCount: 5,
+          lastPostedAt: lastPostedAt,
         );
 
         expect(thread.id, 't1');
@@ -23,6 +25,7 @@ void main() {
         expect(thread.body, 'テスト本文');
         expect(thread.createdAt, createdAt);
         expect(thread.postCount, 5);
+        expect(thread.lastPostedAt, lastPostedAt);
       });
 
       test('postCountを省略した場合、0になる', () {
@@ -35,6 +38,18 @@ void main() {
         );
 
         expect(thread.postCount, 0);
+      });
+
+      test('lastPostedAtを省略した場合、nullになる', () {
+        final thread = Thread(
+          id: 't1',
+          stationId: 's1',
+          title: 'タイトル',
+          body: '本文',
+          createdAt: DateTime.now(),
+        );
+
+        expect(thread.lastPostedAt, isNull);
       });
     });
 
@@ -57,6 +72,24 @@ void main() {
         expect(thread.body, 'おすすめのお店を教えて');
         expect(thread.createdAt, DateTime(2026, 2, 1, 9, 0));
         expect(thread.postCount, 10);
+      });
+
+      test('last_posted_atがある場合、lastPostedAtが設定される', () {
+        final json = TestFixtures.threadJson(
+          lastPostedAt: '2026-02-01T10:30:00.000',
+        );
+
+        final thread = Thread.fromJson(json);
+
+        expect(thread.lastPostedAt, DateTime(2026, 2, 1, 10, 30));
+      });
+
+      test('last_posted_atがない場合、lastPostedAtがnullになる', () {
+        final json = TestFixtures.threadJson();
+
+        final thread = Thread.fromJson(json);
+
+        expect(thread.lastPostedAt, isNull);
       });
 
       test('post_countがnullの場合、0になる', () {
@@ -102,6 +135,15 @@ void main() {
         final json = thread.toJson();
 
         expect(json.containsKey('post_count'), isFalse);
+      });
+
+      test('lastPostedAtはtoJsonに含まれない', () {
+        final thread = TestFixtures.thread(
+          lastPostedAt: DateTime(2026, 2, 1, 10, 30),
+        );
+        final json = thread.toJson();
+
+        expect(json.containsKey('last_posted_at'), isFalse);
       });
     });
 

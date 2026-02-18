@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../design_system/tokens.dart';
+import 'legal_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -22,8 +23,11 @@ class SettingsScreen extends StatelessWidget {
             title: const Text('利用規約'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('利用規約は準備中です')),
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LegalScreen.termsOfService(),
+                ),
               );
             },
           ),
@@ -32,8 +36,11 @@ class SettingsScreen extends StatelessWidget {
             title: const Text('プライバシーポリシー'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('プライバシーポリシーは準備中です')),
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LegalScreen.privacyPolicy(),
+                ),
               );
             },
           ),

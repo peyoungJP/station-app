@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../design_system/tokens.dart';
 import '../providers/location_provider.dart';
 import '../providers/station_provider.dart';
+import '../widgets/error_view.dart';
 import '../widgets/station_card.dart';
 import 'board_screen.dart';
 import 'settings_screen.dart';
@@ -110,7 +111,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               loading: () => const Center(
                 child: CircularProgressIndicator(),
               ),
-              error: (error, _) => _buildErrorState(theme, error.toString()),
+              error: (error, _) => ListView(
+                children: [
+                  SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.3),
+                  Center(
+                    child: ErrorView(
+                      error: error,
+                      onRetry: () => ref
+                          .read(nearbyStationsProvider.notifier)
+                          .fetchNearbyStations(),
+                    ),
+                  ),
+                ],
+              ),
             );
           },
           loading: () => Center(
@@ -127,7 +141,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             if (error is LocationPermissionDeniedException) {
               return _buildPermissionDenied(theme);
             }
-            return _buildErrorState(theme, error.toString());
+            return ListView(
+              children: [
+                SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+                Center(
+                  child: ErrorView(error: error, onRetry: _fetchLocation),
+                ),
+              ],
+            );
           },
         ),
       ),
@@ -236,33 +257,5 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildErrorState(ThemeData theme, String message) {
-    return ListView(
-      children: [
-        SizedBox(height: MediaQuery.of(context).size.height * 0.25),
-        Icon(
-          Icons.error_outline,
-          size: 64,
-          color: theme.colorScheme.error,
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        Text(
-          'エラーが発生しました',
-          style: theme.textTheme.titleMedium,
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-          child: Text(
-            message,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ],
-    );
-  }
 }
+

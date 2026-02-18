@@ -83,5 +83,23 @@ void main() {
 
       expect(find.text('まだスレッドがありません'), findsOneWidget);
     });
+
+    testWidgets('エラーの場合、エラーメッセージと再試行ボタンが表示される', (tester) async {
+      final station = TestFixtures.station();
+      mockThreadService.shouldThrow = true;
+
+      await tester.pumpWidget(
+        buildTestApp(
+          BoardScreen(station: station),
+          overrides: [
+            threadServiceProvider.overrideWithValue(mockThreadService),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('エラーが発生しました'), findsOneWidget);
+      expect(find.text('再試行'), findsOneWidget);
+    });
   });
 }

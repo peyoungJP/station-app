@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../models/post.dart';
+import '../utils/input_sanitizer.dart';
 import 'supabase_service.dart';
 
 class PostService {
@@ -68,11 +69,13 @@ class PostService {
     required String threadId,
     required String body,
   }) async {
+    final sanitizedBody = InputSanitizer.sanitize(body);
+
     if (SupabaseService.useMock) {
       final post = Post(
         id: 'post-${UniqueKey().hashCode}',
         threadId: threadId,
-        body: body,
+        body: sanitizedBody,
         createdAt: DateTime.now(),
       );
       _mockPosts.putIfAbsent(threadId, () => []);
@@ -84,10 +87,17 @@ class PostService {
         .from('posts')
         .insert({
           'thread_id': threadId,
-          'body': body,
+          'body': sanitizedBody,
         })
         .select()
         .single();
+
+    // 投稿後にスレッドの last_posted_at を更新する
+    // Note: DB トリガーで代替することを推奨
+    await SupabaseService.client
+        .from('threads')
+        .update({'last_posted_at': DateTime.now().toUtc().toIso8601String()})
+        .eq('id', threadId);
 
     return Post.fromJson(response);
   }
