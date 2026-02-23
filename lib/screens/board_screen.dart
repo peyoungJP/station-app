@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../design_system/tokens.dart';
-import '../models/station.dart';
+import '../models/location.dart';
 import '../providers/thread_provider.dart';
 import '../widgets/error_view.dart';
 import '../widgets/thread_card.dart';
@@ -10,22 +10,22 @@ import 'create_thread_screen.dart';
 import 'thread_detail_screen.dart';
 
 class BoardScreen extends ConsumerWidget {
-  final Station station;
+  final Location location;
 
-  const BoardScreen({super.key, required this.station});
+  const BoardScreen({super.key, required this.location});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final threadsState = ref.watch(threadsProvider(station.id));
+    final threadsState = ref.watch(threadsProvider(location.id));
     final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${station.name}駅'),
+        title: Text(location.displayTitle),
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          await ref.read(threadsProvider(station.id).notifier).refresh();
+          await ref.read(threadsProvider(location.id).notifier).refresh();
         },
         child: threadsState.when(
           data: (threads) {
@@ -87,7 +87,7 @@ class BoardScreen extends ConsumerWidget {
                 child: ErrorView(
                   error: error,
                   onRetry: () =>
-                      ref.read(threadsProvider(station.id).notifier).refresh(),
+                      ref.read(threadsProvider(location.id).notifier).refresh(),
                 ),
               ),
             ],
@@ -100,11 +100,11 @@ class BoardScreen extends ConsumerWidget {
             context,
             MaterialPageRoute(
               builder: (context) =>
-                  CreateThreadScreen(stationId: station.id),
+                  CreateThreadScreen(stationId: location.id),
             ),
           );
           if (created == true) {
-            ref.read(threadsProvider(station.id).notifier).refresh();
+            ref.read(threadsProvider(location.id).notifier).refresh();
           }
         },
         icon: const Icon(Icons.edit),

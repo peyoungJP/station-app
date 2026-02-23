@@ -1,47 +1,67 @@
+import 'package:my_first_app/models/location.dart';
 import 'package:my_first_app/models/post.dart';
 import 'package:my_first_app/models/report.dart';
-import 'package:my_first_app/models/station.dart';
 import 'package:my_first_app/models/thread.dart';
 
 class TestFixtures {
   TestFixtures._();
 
-  static Station station({
-    String id = 'test-station-1',
+  static Location location({
+    String id = 'test-location-1',
+    LocationType type = LocationType.station,
     String name = 'テスト駅',
     double latitude = 35.6812,
     double longitude = 139.7671,
-    String prefecture = '東京都',
-    String lineName = 'テスト線',
+    int radiusMeters = 500,
+    DateTime? startDate,
+    DateTime? endDate,
+    bool isActive = true,
     double? distance = 100,
+    String? prefecture = '東京都',
+    String? lineName = 'テスト線',
   }) =>
-      Station(
+      Location(
         id: id,
+        type: type,
         name: name,
         latitude: latitude,
         longitude: longitude,
+        radiusMeters: radiusMeters,
+        startDate: startDate,
+        endDate: endDate,
+        isActive: isActive,
+        distance: distance,
         prefecture: prefecture,
         lineName: lineName,
-        distance: distance,
       );
 
-  static Map<String, dynamic> stationJson({
-    String id = 'test-station-1',
+  static Map<String, dynamic> locationJson({
+    String id = 'test-location-1',
+    String type = 'station',
     String name = 'テスト駅',
     double latitude = 35.6812,
     double longitude = 139.7671,
-    String prefecture = '東京都',
-    String lineName = 'テスト線',
+    int radiusMeters = 500,
+    String? startDate,
+    String? endDate,
+    bool isActive = true,
     double? distance = 100,
+    String? prefecture = '東京都',
+    String? lineName = 'テスト線',
   }) =>
       {
         'id': id,
+        'type': type,
         'name': name,
         'latitude': latitude,
         'longitude': longitude,
+        'radius_meters': radiusMeters,
+        'start_date': startDate,
+        'end_date': endDate,
+        'is_active': isActive,
+        'distance': distance,
         'prefecture': prefecture,
         'line_name': lineName,
-        if (distance != null) 'distance': distance,
       };
 
   static Thread thread({

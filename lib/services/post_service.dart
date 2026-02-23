@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../models/post.dart';
 import '../utils/input_sanitizer.dart';
+import '../utils/ng_word_filter.dart';
 import 'supabase_service.dart';
 
 class PostService {
@@ -70,6 +71,8 @@ class PostService {
     required String body,
   }) async {
     final sanitizedBody = InputSanitizer.sanitize(body);
+
+    NgWordFilter.check(sanitizedBody);
 
     if (SupabaseService.useMock) {
       final post = Post(

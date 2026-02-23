@@ -6,6 +6,7 @@ import '../design_system/tokens.dart';
 import '../models/thread.dart';
 import '../providers/thread_provider.dart';
 import '../services/report_service.dart';
+import '../utils/ng_word_filter.dart';
 import '../widgets/error_view.dart';
 import '../widgets/post_item.dart';
 
@@ -37,22 +38,39 @@ class _ThreadDetailScreenState extends ConsumerState<ThreadDetailScreen> {
 
     setState(() => _isSending = true);
 
-    await ref
-        .read(postsProvider(widget.thread.id).notifier)
-        .addPost(body: body);
+    try {
+      await ref
+          .read(postsProvider(widget.thread.id).notifier)
+          .addPost(body: body);
 
-    _replyController.clear();
-    setState(() => _isSending = false);
+      _replyController.clear();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    } on NgWordException {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('不適切な表現が含まれているため投稿できません。')),
         );
       }
-    });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('返信の送信に失敗しました。もう一度お試しください。')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSending = false);
+      }
+    }
   }
 
   void _showReportDialog(String contentType, String contentId) {
@@ -75,15 +93,24 @@ class _ThreadDetailScreenState extends ConsumerState<ThreadDetailScreen> {
                   onPressed: () async {
                     Navigator.pop(context);
                     final messenger = ScaffoldMessenger.of(this.context);
-                    await ReportService().createReport(
-                      contentType: contentType,
-                      contentId: contentId,
-                      reason: reason,
-                    );
-                    if (mounted) {
-                      messenger.showSnackBar(
-                        const SnackBar(content: Text('通報を受け付けました')),
+                    try {
+                      await ReportService().createReport(
+                        contentType: contentType,
+                        contentId: contentId,
+                        reason: reason,
                       );
+                      if (mounted) {
+                        messenger.showSnackBar(
+                          const SnackBar(content: Text('通報を受け付けました')),
+                        );
+                      }
+                    } catch (e) {
+                      if (mounted) {
+                        messenger.showSnackBar(
+                          const SnackBar(
+                              content: Text('通報の送信に失敗しました。もう一度お試しください。')),
+                        );
+                      }
                     }
                   },
                   child: Text(reason),

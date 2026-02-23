@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../design_system/tokens.dart';
 import '../providers/location_provider.dart';
-import '../providers/station_provider.dart';
+import '../providers/nearby_location_provider.dart';
 import '../widgets/error_view.dart';
-import '../widgets/station_card.dart';
+import '../widgets/location_card.dart';
 import 'board_screen.dart';
 import 'settings_screen.dart';
 
@@ -27,13 +27,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Future<void> _fetchLocation() async {
     await ref.read(locationProvider.notifier).fetchLocation();
-    await ref.read(nearbyStationsProvider.notifier).fetchNearbyStations();
+    await ref.read(nearbyLocationsProvider.notifier).fetchNearbyLocations();
   }
 
   @override
   Widget build(BuildContext context) {
     final locationState = ref.watch(locationProvider);
-    final stationsState = ref.watch(nearbyStationsProvider);
+    final locationsState = ref.watch(nearbyLocationsProvider);
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -62,9 +62,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               return _buildPermissionRequest(theme);
             }
 
-            return stationsState.when(
-              data: (stations) {
-                if (stations.isEmpty) {
+            return locationsState.when(
+              data: (locations) {
+                if (locations.isEmpty) {
                   return _buildEmptyState(theme);
                 }
 
@@ -73,7 +73,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     top: AppSpacing.xs,
                     bottom: AppSpacing.sm,
                   ),
-                  itemCount: stations.length + 1,
+                  itemCount: locations.length + 1,
                   itemBuilder: (context, index) {
                     if (index == 0) {
                       return Padding(
@@ -84,7 +84,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           AppSpacing.xs,
                         ),
                         child: Text(
-                          '500m以内の駅',
+                          '近くの掲示板',
                           style: theme.textTheme.titleSmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
@@ -92,15 +92,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       );
                     }
 
-                    final station = stations[index - 1];
-                    return StationCard(
-                      station: station,
+                    final location = locations[index - 1];
+                    return LocationCard(
+                      location: location,
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                                BoardScreen(station: station),
+                                BoardScreen(location: location),
                           ),
                         );
                       },
@@ -119,8 +119,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     child: ErrorView(
                       error: error,
                       onRetry: () => ref
-                          .read(nearbyStationsProvider.notifier)
-                          .fetchNearbyStations(),
+                          .read(nearbyLocationsProvider.notifier)
+                          .fetchNearbyLocations(),
                     ),
                   ),
                 ],
@@ -175,7 +175,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              '近くの駅を検索するために位置情報が必要です。',
+              '近くの掲示板を見つけるために位置情報が必要です。',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -235,19 +235,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.25),
         Icon(
-          Icons.train_outlined,
+          Icons.forum_outlined,
           size: 64,
           color: theme.colorScheme.onSurfaceVariant,
         ),
         const SizedBox(height: AppSpacing.sm),
         Text(
-          '500m以内に駅がありません',
+          '近くに掲示板が見つかりません',
           style: theme.textTheme.titleMedium,
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: AppSpacing.xs),
         Text(
-          '駅の近くで再度お試しください。',
+          '別の場所で再度お試しください。',
           style: theme.textTheme.bodyMedium?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),

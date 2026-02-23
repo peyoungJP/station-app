@@ -15,12 +15,12 @@ void main() {
       mockThreadService = MockThreadService();
     });
 
-    testWidgets('AppBarに駅名が表示される', (tester) async {
-      final station = TestFixtures.station(name: '東京');
+    testWidgets('AppBarにstation型の場合「〜駅」が表示される', (tester) async {
+      final location = TestFixtures.location(name: '東京');
 
       await tester.pumpWidget(
         buildTestApp(
-          BoardScreen(station: station),
+          BoardScreen(location: location),
           overrides: [
             threadServiceProvider.overrideWithValue(mockThreadService),
           ],
@@ -32,11 +32,11 @@ void main() {
     });
 
     testWidgets('FABが表示される', (tester) async {
-      final station = TestFixtures.station();
+      final location = TestFixtures.location();
 
       await tester.pumpWidget(
         buildTestApp(
-          BoardScreen(station: station),
+          BoardScreen(location: location),
           overrides: [
             threadServiceProvider.overrideWithValue(mockThreadService),
           ],
@@ -49,14 +49,14 @@ void main() {
     });
 
     testWidgets('スレッド一覧がある場合にスレッドが表示される', (tester) async {
-      final station = TestFixtures.station();
+      final location = TestFixtures.location();
       mockThreadService.mockResult = [
-        TestFixtures.thread(title: 'テストスレッド1', stationId: station.id),
+        TestFixtures.thread(title: 'テストスレッド1', stationId: location.id),
       ];
 
       await tester.pumpWidget(
         buildTestApp(
-          BoardScreen(station: station),
+          BoardScreen(location: location),
           overrides: [
             threadServiceProvider.overrideWithValue(mockThreadService),
           ],
@@ -68,12 +68,12 @@ void main() {
     });
 
     testWidgets('スレッドがない場合に空状態メッセージが表示される', (tester) async {
-      final station = TestFixtures.station();
+      final location = TestFixtures.location();
       mockThreadService.mockResult = [];
 
       await tester.pumpWidget(
         buildTestApp(
-          BoardScreen(station: station),
+          BoardScreen(location: location),
           overrides: [
             threadServiceProvider.overrideWithValue(mockThreadService),
           ],
@@ -85,12 +85,12 @@ void main() {
     });
 
     testWidgets('エラーの場合、エラーメッセージと再試行ボタンが表示される', (tester) async {
-      final station = TestFixtures.station();
+      final location = TestFixtures.location();
       mockThreadService.shouldThrow = true;
 
       await tester.pumpWidget(
         buildTestApp(
-          BoardScreen(station: station),
+          BoardScreen(location: location),
           overrides: [
             threadServiceProvider.overrideWithValue(mockThreadService),
           ],

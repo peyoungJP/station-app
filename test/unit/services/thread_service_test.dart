@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:my_first_app/services/thread_service.dart';
+import 'package:my_first_app/utils/ng_word_filter.dart';
 
 void main() {
   group('ThreadService（モックモード）', () {
@@ -133,6 +134,28 @@ void main() {
         );
 
         expect(thread.createdAt.isAfter(before.subtract(const Duration(seconds: 1))), isTrue);
+      });
+
+      test('タイトルにNGワードが含まれる場合、NgWordExceptionがスローされる', () async {
+        expect(
+          () => service.createThread(
+            stationId: 'mock-1',
+            title: '死ねと言われた',
+            body: '普通の本文',
+          ),
+          throwsA(isA<NgWordException>()),
+        );
+      });
+
+      test('本文にNGワードが含まれる場合、NgWordExceptionがスローされる', () async {
+        expect(
+          () => service.createThread(
+            stationId: 'mock-1',
+            title: '普通のタイトル',
+            body: '副業で月収100万！',
+          ),
+          throwsA(isA<NgWordException>()),
+        );
       });
     });
   });

@@ -1,11 +1,12 @@
 import 'package:geolocator/geolocator.dart';
+import 'package:my_first_app/models/location.dart';
 import 'package:my_first_app/models/post.dart';
-import 'package:my_first_app/models/station.dart';
 import 'package:my_first_app/models/thread.dart';
 import 'package:my_first_app/services/location_service.dart';
+import 'package:my_first_app/services/nearby_location_service.dart';
 import 'package:my_first_app/services/post_service.dart';
-import 'package:my_first_app/services/station_service.dart';
 import 'package:my_first_app/services/thread_service.dart';
+import 'package:my_first_app/utils/ng_word_filter.dart';
 
 import 'fixtures.dart';
 
@@ -43,12 +44,12 @@ class MockLocationService extends LocationService {
   }
 }
 
-class MockStationService extends StationService {
-  List<Station> mockResult = [TestFixtures.station()];
+class MockNearbyLocationService extends NearbyLocationService {
+  List<Location> mockResult = [TestFixtures.location()];
   bool shouldThrow = false;
 
   @override
-  Future<List<Station>> getNearbyStations({
+  Future<List<Location>> getNearbyLocations({
     required double latitude,
     required double longitude,
     double radiusMeters = 500,
@@ -61,6 +62,8 @@ class MockStationService extends StationService {
 class MockThreadService extends ThreadService {
   List<Thread> mockResult = [TestFixtures.thread()];
   bool shouldThrow = false;
+  bool shouldThrowOnCreate = false;
+  bool shouldThrowNgWord = false;
   final List<Thread> createdThreads = [];
 
   @override
@@ -75,7 +78,8 @@ class MockThreadService extends ThreadService {
     required String title,
     required String body,
   }) async {
-    if (shouldThrow) throw Exception('テストエラー');
+    if (shouldThrowNgWord) throw const NgWordException();
+    if (shouldThrow || shouldThrowOnCreate) throw Exception('テストエラー');
     final thread = TestFixtures.thread(
       stationId: stationId,
       title: title,
@@ -90,6 +94,8 @@ class MockThreadService extends ThreadService {
 class MockPostService extends PostService {
   List<Post> mockResult = [TestFixtures.post()];
   bool shouldThrow = false;
+  bool shouldThrowOnCreate = false;
+  bool shouldThrowNgWord = false;
   final List<Post> createdPosts = [];
 
   @override
@@ -103,7 +109,8 @@ class MockPostService extends PostService {
     required String threadId,
     required String body,
   }) async {
-    if (shouldThrow) throw Exception('テストエラー');
+    if (shouldThrowNgWord) throw const NgWordException();
+    if (shouldThrow || shouldThrowOnCreate) throw Exception('テストエラー');
     final post = TestFixtures.post(threadId: threadId, body: body);
     createdPosts.add(post);
     mockResult = [...mockResult, post];

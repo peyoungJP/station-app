@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../design_system/tokens.dart';
 import '../providers/thread_provider.dart';
+import '../utils/ng_word_filter.dart';
 
 class CreateThreadScreen extends ConsumerStatefulWidget {
   final String stationId;
@@ -35,13 +36,31 @@ class _CreateThreadScreenState extends ConsumerState<CreateThreadScreen> {
 
     setState(() => _isSubmitting = true);
 
-    await ref.read(threadsProvider(widget.stationId).notifier).createThread(
-          title: _titleController.text.trim(),
-          body: _bodyController.text.trim(),
-        );
+    try {
+      await ref.read(threadsProvider(widget.stationId).notifier).createThread(
+            title: _titleController.text.trim(),
+            body: _bodyController.text.trim(),
+          );
 
-    if (mounted) {
-      Navigator.pop(context, true);
+      if (mounted) {
+        Navigator.pop(context, true);
+      }
+    } on NgWordException {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('不適切な表現が含まれているため投稿できません。')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('投稿に失敗しました。もう一度お試しください。')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
     }
   }
 

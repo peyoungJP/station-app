@@ -2,19 +2,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:my_first_app/providers/location_provider.dart';
-import 'package:my_first_app/providers/station_provider.dart';
+import 'package:my_first_app/providers/nearby_location_provider.dart';
 
 import '../../helpers/fixtures.dart';
 import '../../helpers/mock_services.dart';
 
 void main() {
-  group('NearbyStationsNotifier', () {
+  group('NearbyLocationsNotifier', () {
     late ProviderContainer container;
-    late MockStationService mockStationService;
+    late MockNearbyLocationService mockService;
     late MockLocationService mockLocationService;
 
     setUp(() {
-      mockStationService = MockStationService();
+      mockService = MockNearbyLocationService();
       mockLocationService = MockLocationService();
     });
 
@@ -25,19 +25,20 @@ void main() {
     ProviderContainer createContainer({AsyncValue<Position?>? locationState}) {
       return ProviderContainer(
         overrides: [
-          stationServiceProvider.overrideWithValue(mockStationService),
+          nearbyLocationServiceProvider.overrideWithValue(mockService),
           locationServiceProvider.overrideWithValue(mockLocationService),
           if (locationState != null)
-            locationProvider.overrideWith(() => _FakeLocationNotifier(locationState)),
+            locationProvider
+                .overrideWith(() => _FakeLocationNotifier(locationState)),
         ],
       );
     }
 
     test('初期状態はAsyncData(空リスト)である', () async {
       container = createContainer();
-      await container.read(nearbyStationsProvider.future);
+      await container.read(nearbyLocationsProvider.future);
 
-      final state = container.read(nearbyStationsProvider);
+      final state = container.read(nearbyLocationsProvider);
       expect(state, isA<AsyncData>());
       expect(state.valueOrNull, isEmpty);
     });
@@ -46,15 +47,17 @@ void main() {
       container = createContainer(
         locationState: const AsyncData(null),
       );
-      await container.read(nearbyStationsProvider.future);
+      await container.read(nearbyLocationsProvider.future);
 
-      await container.read(nearbyStationsProvider.notifier).fetchNearbyStations();
+      await container
+          .read(nearbyLocationsProvider.notifier)
+          .fetchNearbyLocations();
 
-      final state = container.read(nearbyStationsProvider);
+      final state = container.read(nearbyLocationsProvider);
       expect(state.valueOrNull, isEmpty);
     });
 
-    test('位置情報がある場合、fetchで駅リストがAsyncDataに入る', () async {
+    test('位置情報がある場合、fetchでLocationリストがAsyncDataに入る', () async {
       final mockPosition = Position(
         latitude: 35.6812,
         longitude: 139.7671,
@@ -68,22 +71,24 @@ void main() {
         speedAccuracy: 0,
       );
 
-      mockStationService.mockResult = [
-        TestFixtures.station(name: '東京'),
-        TestFixtures.station(id: 's2', name: '有楽町'),
+      mockService.mockResult = [
+        TestFixtures.location(name: 'テスト駅1'),
+        TestFixtures.location(id: 'loc-2', name: 'テスト駅2'),
       ];
 
       container = createContainer(
         locationState: AsyncData(mockPosition),
       );
-      await container.read(nearbyStationsProvider.future);
+      await container.read(nearbyLocationsProvider.future);
 
-      await container.read(nearbyStationsProvider.notifier).fetchNearbyStations();
+      await container
+          .read(nearbyLocationsProvider.notifier)
+          .fetchNearbyLocations();
 
-      final state = container.read(nearbyStationsProvider);
+      final state = container.read(nearbyLocationsProvider);
       expect(state, isA<AsyncData>());
       expect(state.valueOrNull!.length, 2);
-      expect(state.valueOrNull!.first.name, '東京');
+      expect(state.valueOrNull!.first.name, 'テスト駅1');
     });
 
     test('サービスが例外を投げた場合、AsyncErrorになる', () async {
@@ -100,16 +105,18 @@ void main() {
         speedAccuracy: 0,
       );
 
-      mockStationService.shouldThrow = true;
+      mockService.shouldThrow = true;
 
       container = createContainer(
         locationState: AsyncData(mockPosition),
       );
-      await container.read(nearbyStationsProvider.future);
+      await container.read(nearbyLocationsProvider.future);
 
-      await container.read(nearbyStationsProvider.notifier).fetchNearbyStations();
+      await container
+          .read(nearbyLocationsProvider.notifier)
+          .fetchNearbyLocations();
 
-      final state = container.read(nearbyStationsProvider);
+      final state = container.read(nearbyLocationsProvider);
       expect(state, isA<AsyncError>());
     });
 
@@ -127,23 +134,26 @@ void main() {
         speedAccuracy: 0,
       );
 
-      mockStationService.mockResult = [];
+      mockService.mockResult = [];
 
       container = createContainer(
         locationState: AsyncData(mockPosition),
       );
-      await container.read(nearbyStationsProvider.future);
+      await container.read(nearbyLocationsProvider.future);
 
-      await container.read(nearbyStationsProvider.notifier).fetchNearbyStations();
+      await container
+          .read(nearbyLocationsProvider.notifier)
+          .fetchNearbyLocations();
 
-      final state = container.read(nearbyStationsProvider);
+      final state = container.read(nearbyLocationsProvider);
       expect(state, isA<AsyncData>());
       expect(state.valueOrNull, isEmpty);
     });
   });
 }
 
-class _FakeLocationNotifier extends AsyncNotifier<Position?> implements LocationNotifier {
+class _FakeLocationNotifier extends AsyncNotifier<Position?>
+    implements LocationNotifier {
   final AsyncValue<Position?> _initialState;
 
   _FakeLocationNotifier(this._initialState);

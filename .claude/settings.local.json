@@ -25,7 +25,9 @@
       "Bash(python3:*)",
       "Bash(git -C /Users/hiroshisaito/Developer/my_first_app remote -v)",
       "Bash(gh issue view:*)",
-      "Bash(gh label list:*)"
+      "Bash(gh label list:*)",
+      "Bash(xargs:*)",
+      "Bash(flutter analyze:*)"
     ]
   }
 }

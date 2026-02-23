@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:my_first_app/services/post_service.dart';
+import 'package:my_first_app/utils/ng_word_filter.dart';
 
 void main() {
   group('PostService（モックモード）', () {
@@ -97,6 +98,16 @@ void main() {
         );
 
         expect(post.id, isNotEmpty);
+      });
+
+      test('本文にNGワードが含まれる場合、NgWordExceptionがスローされる', () async {
+        expect(
+          () => service.createPost(
+            threadId: 'thread-1',
+            body: '死ね！',
+          ),
+          throwsA(isA<NgWordException>()),
+        );
       });
     });
   });

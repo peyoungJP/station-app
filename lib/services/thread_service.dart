@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../models/thread.dart';
 import '../utils/input_sanitizer.dart';
+import '../utils/ng_word_filter.dart';
 import 'supabase_service.dart';
 
 class ThreadService {
@@ -88,6 +89,9 @@ class ThreadService {
   }) async {
     final sanitizedTitle = InputSanitizer.sanitize(title);
     final sanitizedBody = InputSanitizer.sanitize(body);
+
+    NgWordFilter.check(sanitizedTitle);
+    NgWordFilter.check(sanitizedBody);
 
     if (SupabaseService.useMock) {
       final thread = Thread(

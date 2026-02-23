@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 import '../design_system/tokens.dart';
-import '../models/station.dart';
+import '../models/location.dart';
 
-class StationCard extends StatelessWidget {
-  final Station station;
+class LocationCard extends StatelessWidget {
+  final Location location;
   final VoidCallback onTap;
 
-  const StationCard({
+  const LocationCard({
     super.key,
-    required this.station,
+    required this.location,
     required this.onTap,
   });
 
@@ -37,7 +37,7 @@ class StationCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppRadius.xs),
                 ),
                 child: Icon(
-                  Icons.train,
+                  _iconForType(location.type),
                   color: theme.colorScheme.onPrimaryContainer,
                 ),
               ),
@@ -47,22 +47,24 @@ class StationCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      station.name,
+                      location.displayTitle,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      station.lineName,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
+                    if (location.subtitle != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        location.subtitle!,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),
-              if (station.distance != null)
+              if (location.distance != null)
                 Container(
                   padding: EdgeInsets.symmetric(
                     horizontal: AppSpacing.xs + 4,
@@ -73,7 +75,7 @@ class StationCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(AppRadius.full),
                   ),
                   child: Text(
-                    '${station.distance!.round()}m',
+                    '${location.distance!.round()}m',
                     style: theme.textTheme.labelMedium?.copyWith(
                       color: theme.colorScheme.onSecondaryContainer,
                       fontWeight: FontWeight.w600,
@@ -90,5 +92,16 @@ class StationCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  IconData _iconForType(LocationType type) {
+    switch (type) {
+      case LocationType.station:
+        return Icons.train;
+      case LocationType.event:
+        return Icons.event;
+      case LocationType.area:
+        return Icons.place;
+    }
   }
 }
