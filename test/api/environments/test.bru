@@ -1,0 +1,14 @@
+vars {
+  # テスト用 Supabase プロジェクトの URL と匿名キー
+  # CI では GitHub Secrets から環境変数として注入される
+  # ローカルでは .env ファイルまたは bru run --env-var で上書きする
+  supabase_url: {{process.env.SUPABASE_TEST_URL}}
+  supabase_anon_key: {{process.env.SUPABASE_TEST_ANON_KEY}}
+
+  # テスト用の固定値（seed.sql 投入後に存在する stationId）
+  test_station_id: test-station-1
+}
+
+vars:secret [
+  supabase_anon_key
+]

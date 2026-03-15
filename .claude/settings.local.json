@@ -27,7 +27,9 @@
       "Bash(gh issue view:*)",
       "Bash(gh label list:*)",
       "Bash(xargs:*)",
-      "Bash(flutter analyze:*)"
+      "Bash(flutter analyze:*)",
+      "WebFetch(domain:www.humanlayer.dev)",
+      "Bash(flutter pub get:*)"
     ]
   }
 }

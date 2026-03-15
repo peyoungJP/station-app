@@ -1,0 +1,38 @@
+meta {
+  name: POST スレッド作成
+  type: http
+  seq: 2
+}
+
+post {
+  # Supabase REST API: threads テーブルへ新規レコードを挿入
+  url: {{supabase_url}}/rest/v1/threads
+  body: json
+  auth: none
+}
+
+headers {
+  apikey: {{supabase_anon_key}}
+  Authorization: Bearer {{supabase_anon_key}}
+  Content-Type: application/json
+  # 201 Created のレスポンスボディに挿入したレコードを返させる
+  Prefer: return=representation
+}
+
+body:json {
+  {
+    "station_id": "{{test_station_id}}",
+    "title": "[CI テスト] スレッド作成テスト",
+    "body": "このスレッドは自動テストで作成されました。削除しても構いません。"
+  }
+}
+
+assert {
+  # ステータスコードが 201 Created であること
+  res.status: eq 201
+
+  # レスポンスが配列で1件含まれること
+  res.body: isArray
+  res.body[0].station_id: eq {{test_station_id}}
+  res.body[0].title: eq [CI テスト] スレッド作成テスト
+}

@@ -1,0 +1,26 @@
+meta {
+  name: GET スレッド一覧（駅別）
+  type: http
+  seq: 1
+}
+
+get {
+  # Supabase REST API: threads テーブルを stationId でフィルタして取得
+  url: {{supabase_url}}/rest/v1/threads?station_id=eq.{{test_station_id}}&select=*&order=created_at.desc
+  body: none
+  auth: none
+}
+
+headers {
+  apikey: {{supabase_anon_key}}
+  Authorization: Bearer {{supabase_anon_key}}
+  Content-Type: application/json
+}
+
+assert {
+  # ステータスコードが 200 であること
+  res.status: eq 200
+
+  # レスポンスが配列であること
+  res.body: isArray
+}
